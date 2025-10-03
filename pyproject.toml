@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=80.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "otpylib-logger"
+version = "0.1.1"
+description = "Runtime logging for otpylib applications."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "HeroesLament", email = "nunya@biz.net"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["logging", "logger", "otp", "supervision"]
+requires-python = ">=3.11"
+dependencies = [
+    "otpylib>=0.4.7",
+    "result>=0.17.0",
+]
+
+[project.optional-dependencies]
+toml = ["tomli>=2.0.0; python_version<'3.11'"]
+dev = ["pytest>=7.0.0"]
+
+[dependency-groups]
+dev = ["pytest>=7.0.0"]
+
+[project.urls]
+Homepage = "https://github.com/HeroesLament/otpylib-logger"
+Repository = "https://github.com/HeroesLament/otpylib-logger.git"
+Issues = "https://github.com/HeroesLament/otpylib-logger/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["otpylib_logger*"]
+
+[tool.setuptools.package-data]
+otpylib_logger = ["py.typed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+anyio_backends = ["asyncio"]
