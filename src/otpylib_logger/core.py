@@ -29,17 +29,14 @@ def should_log(message_level: str, handler_level: str) -> bool:
         >>> should_log("DEBUG", "WARN")
         False
     """
-    levels = {
-        "DEBUG": 0,
-        "INFO": 1,
-        "WARN": 2,
-        "ERROR": 3,
-    }
+    # Convert strings to LogLevel if needed
+    if isinstance(message_level, str):
+        message_level = LogLevel[message_level]
+    if isinstance(handler_level, str):
+        handler_level = LogLevel[handler_level]
     
-    msg_priority = levels.get(message_level, 0)
-    handler_priority = levels.get(handler_level, 0)
-    
-    return msg_priority >= handler_priority
+    # Compare enum values directly
+    return message_level.value >= handler_level.value
 
 
 def format_log_entry(level: str, message: str, metadata: Dict[str, Any]) -> LogEntry:

@@ -24,16 +24,11 @@ callbacks = types.SimpleNamespace()
 
 
 async def init(config: Dict[str, Any]):
-    """
-    Initialize console handler.
-    
-    Config options:
-        - use_stderr: bool - Write ERROR level to stderr (default: True)
-        - colorize: bool - Use ANSI colors (default: False)
-    """
+    """Initialize console handler."""
     state = {
         "use_stderr": config.get("use_stderr", True),
         "colorize": config.get("colorize", False),
+        "level": config.get("level"),
     }
     
     # Register with logger manager
@@ -46,7 +41,11 @@ async def init(config: Dict[str, Any]):
 async def handle_info(message, state):
     """Handle write requests."""
     match message:
-        case ("write", entry):
+        case ("write", entry):            
+            # CHECK LEVEL BEFORE WRITING
+            if state["level"] and not core.should_log(entry.level, state["level"]):
+                return (gen_server.NoReply(), state)
+            
             # Format the log entry
             log_line = core.format_log_line(entry)
             

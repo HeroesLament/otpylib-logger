@@ -50,11 +50,17 @@ async def logger_supervisor(logger_spec: LoggerSpec):
     
     # Add handlers as supervised children
     for handler_spec, start_func in handlers:
+        # Merge handler level into config
+        handler_config = {
+            **handler_spec.config,
+            "level": handler_spec.level,
+        }
+        
         children.append(
             supervisor.child_spec(
                 id=f"handler_{handler_spec.name}",
                 func=start_func,
-                args=[handler_spec.config],
+                args=[handler_config],
                 restart=PERMANENT,
             )
         )
