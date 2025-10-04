@@ -44,6 +44,7 @@ async def logger_supervisor(logger_spec: LoggerSpec):
             func=start_logger_manager,
             args=[logger_spec],
             restart=PERMANENT,
+            name=LOGGER
         ),
     ]
     

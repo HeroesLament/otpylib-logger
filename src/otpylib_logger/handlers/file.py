@@ -12,7 +12,7 @@ from pathlib import Path
 from otpylib import atom, gen_server, process
 
 from otpylib_logger import core
-from otpylib_logger.atoms import LOGGER
+from otpylib_logger.atoms import ADD, LOGGER
 from otpylib_logger.data import LogEntry
 
 
@@ -50,7 +50,7 @@ async def init(config: Dict[str, Any]):
     
     # Register with logger manager
     my_pid = process.self()
-    await process.send(LOGGER, ("add_handler", my_pid))
+    await process.send(LOGGER, (ADD, my_pid))
     
     return state
 
