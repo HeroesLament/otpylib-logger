@@ -8,6 +8,9 @@ No side effects, no GenServer knowledge, just business logic.
 
 import time
 from typing import Dict, Any
+from datetime import datetime
+
+from otpylib import process
 
 from otpylib_logger.data import LogLevel, LogEntry
 
@@ -70,16 +73,23 @@ def format_log_line(entry: LogEntry) -> str:
         Formatted string suitable for console/file output
     
     Example output:
-        2025-10-02 14:23:45 | INFO | pid_abc123 | Server started
+        2025-10-02 14:23:45 | INFO | my_server | Server started
     """
-    from datetime import datetime
-    
     # Format timestamp
     dt = datetime.fromtimestamp(entry.timestamp)
     timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
     
-    # Extract pid if present
+    # Extract and resolve pid if present
     pid = entry.metadata.get("pid", "unknown")
+    
+    # Try to resolve pid to registered name
+    if pid != "unknown":
+        try:
+            name = process.whereis_name(pid)
+            if name:
+                pid = name  # Use the name instead of raw PID
+        except:
+            pass  # Keep raw PID if resolution fails
     
     # Build base log line
     log_line = f"{timestamp_str} | {entry.level:<5} | {pid} | {entry.message}"
