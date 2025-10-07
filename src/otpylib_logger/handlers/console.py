@@ -6,68 +6,86 @@ Writes log entries to stdout/stderr.
 """
 
 import sys
-import types
 from typing import Dict, Any
 
-from otpylib import gen_server, atom, process
+from otpylib import atom, process
+from otpylib.module import OTPModule, GEN_SERVER
+from otpylib.gen_server.data import NoReply
 
 from otpylib_logger import core
 from otpylib_logger.atoms import ADD, LOGGER
-from otpylib_logger.data import LogEntry
+
+
+HANDLER_CONSOLE = atom.ensure("handler_console")
 
 
 # =============================================================================
-# Console Handler GenServer
+# Console Handler GenServer Module
 # =============================================================================
 
-callbacks = types.SimpleNamespace()
-
-
-async def init(config: Dict[str, Any]):
-    """Initialize console handler."""
-    state = {
-        "use_stderr": config.get("use_stderr", True),
-        "colorize": config.get("colorize", False),
-        "level": config.get("level"),
-    }
+class ConsoleHandler(metaclass=OTPModule, behavior=GEN_SERVER, version="1.0.0"):
+    """
+    Console Handler GenServer.
     
-    # Register with logger manager
-    my_pid = process.self()
-    await process.send(LOGGER, (ADD, my_pid))
+    Writes log entries to stdout/stderr with optional colorization.
+    """
     
-    return state
-
-
-async def handle_info(message, state):
-    """Handle write requests."""
-    match message:
-        case ("write", entry):            
-            # CHECK LEVEL BEFORE WRITING
-            if state["level"] and not core.should_log(entry.level, state["level"]):
-                return (gen_server.NoReply(), state)
-            
-            # Format the log entry
-            log_line = core.format_log_line(entry)
-            
-            # Optionally colorize
-            if state["colorize"]:
-                log_line = _colorize(entry.level, log_line)
-            
-            # Choose output stream
-            if state["use_stderr"] and entry.level == "ERROR":
-                print(log_line, file=sys.stderr)
-            else:
-                print(log_line, file=sys.stdout)
-            
-            return (gen_server.NoReply(), state)
+    async def init(self, config: Dict[str, Any]):
+        """Initialize console handler."""
+        state = {
+            "use_stderr": config.get("use_stderr", True),
+            "colorize": config.get("colorize", False),
+            "level": config.get("level"),
+        }
         
-        case _:
-            return (gen_server.NoReply(), state)
+        # Register with logger manager
+        my_pid = process.self()
+        await process.send(LOGGER, (ADD, my_pid))
+        
+        return state
+    
+    async def handle_call(self, message, _caller, state):
+        """Handle synchronous calls (none defined)."""
+        return (NoReply(), state)
+    
+    async def handle_cast(self, message, state):
+        """Handle asynchronous casts (none defined)."""
+        return (NoReply(), state)
+    
+    async def handle_info(self, message, state):
+        """Handle write requests."""
+        match message:
+            case ("write", entry):            
+                # CHECK LEVEL BEFORE WRITING
+                if state["level"] and not core.should_log(entry.level, state["level"]):
+                    return (NoReply(), state)
+                
+                # Format the log entry
+                log_line = core.format_log_line(entry)
+                
+                # Optionally colorize
+                if state["colorize"]:
+                    log_line = _colorize(entry.level, log_line)
+                
+                # Choose output stream
+                if state["use_stderr"] and entry.level == "ERROR":
+                    print(log_line, file=sys.stderr)
+                else:
+                    print(log_line, file=sys.stdout)
+                
+                return (NoReply(), state)
+            
+            case _:
+                return (NoReply(), state)
+    
+    async def terminate(self, reason, state):
+        """Cleanup on termination."""
+        pass
 
 
-callbacks.init = init
-callbacks.handle_info = handle_info
-
+# =============================================================================
+# Helper Functions
+# =============================================================================
 
 def _colorize(level: str, text: str) -> str:
     """Add ANSI color codes based on log level."""
@@ -83,10 +101,15 @@ def _colorize(level: str, text: str) -> str:
     return f"{color}{text}{reset}"
 
 
+# =============================================================================
+# Lifecycle Function
+# =============================================================================
+
 async def start_link(config: Dict[str, Any]):
     """Start the console handler GenServer."""
-    return await gen_server.start(
-        callbacks,
-        config,
-        name=atom.ensure("handler_console")
+    from otpylib import gen_server
+    return await gen_server.start_link(
+        ConsoleHandler,
+        init_arg=config,
+        name=HANDLER_CONSOLE
     )
