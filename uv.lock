@@ -35,21 +35,21 @@ wheels = [
 
 [[package]]
 name = "otpylib"
-version = "0.4.8"
+version = "0.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "loguru" },
     { name = "result" },
     { name = "tenacity" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1c/da/79a2b0f46974383b017b389974c7e45092157ae74cbb8b06751f37ffa89b/otpylib-0.4.8.tar.gz", hash = "sha256:12f66b6628dbca3581f22716473c5696a4d36c616b76a74fd9850961834816ae", size = 78525, upload-time = "2025-10-04T02:52:20.714Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ca/22/3b911e887aef0e869687cde925a93ff38b6536863fb704bdcf22b6976934/otpylib-0.5.3.tar.gz", hash = "sha256:b48dbab3aa9450b353d1787c7e5f0bb6bdaf17f9e778a8044425ff7d9a97ff33", size = 97069, upload-time = "2025-10-07T17:23:14.585Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dd/a7/b08940038fb2b2694cd5fc44a05e4a0ac2c1c24bc951dd964ca6e9dba67f/otpylib-0.4.8-py3-none-any.whl", hash = "sha256:841564356e93770ffcd2a80c7557567fe8895e95ca14053f88b421497e686682", size = 96413, upload-time = "2025-10-04T02:52:19.238Z" },
+    { url = "https://files.pythonhosted.org/packages/65/0c/933604adfef39a24c886de3d3311a4c21e416195ea284731955f10ccc8f6/otpylib-0.5.3-py3-none-any.whl", hash = "sha256:666308b66fa23368a71b4e9a7792c46bf1c6cf34aa4aae2ee2271367e993051a", size = 119703, upload-time = "2025-10-07T17:23:13.046Z" },
 ]
 
 [[package]]
 name = "otpylib-logger"
-version = "0.1.4"
+version = "0.2.3"
 source = { editable = "." }
 dependencies = [
     { name = "otpylib" },
@@ -68,7 +68,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "otpylib", specifier = ">=0.4.8" },
+    { name = "otpylib", specifier = ">=0.5.3" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "result", specifier = ">=0.17.0" },
     { name = "tomli", marker = "python_full_version < '3.11' and extra == 'toml'", specifier = ">=2.0.0" },

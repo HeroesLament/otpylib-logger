@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "otpylib-logger"
-version = "0.1.4"
+version = "0.2.3"
 description = "Runtime logging for otpylib applications."
 readme = "README.md"
 license = {text = "MIT"}
@@ -23,7 +23,7 @@ classifiers = [
 keywords = ["logging", "logger", "otp", "supervision"]
 requires-python = ">=3.11"
 dependencies = [
-    "otpylib>=0.4.8",
+    "otpylib>=0.5.3",
     "result>=0.17.0",
 ]
 
